@@ -1,0 +1,276 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap');
+
+:root {
+  --color-text: #505050;
+  --font-family: ;
+  --bg-color: #D1D8EC;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;  
+  font-family: 'Poppins', sans-serif;
+}
+
+body {
+  height: 100vh;
+  display: grid;
+  place-items: center;
+  background: var(--bg-color);
+}
+
+.card {
+  position: relative;
+  width: 60%;
+  height: 600px;
+  padding: 30px;
+  border-radius: 50px;
+border-radius: 50px;
+background: var(--bg-color);
+box-shadow: 12px 12px 24px #b2b8c9, -12px -12px 24px #f0f8ff;
+}
+
+.card h2 {
+  text-align: center;
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--color-text);
+  margin-bottom: 8px;
+}
+
+.card h2 a {
+  color: var(--color-text);
+  text-decoration: none;
+  cursor: default;
+}
+
+.area-chart {
+  position: relative;
+}
+
+
+
+/* STYLESHEET 2 */
+
+.input-group {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* flex-wrap: wrap; */
+  gap: 1rem;
+}
+
+.input-group > div {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+label {
+  /* display: block; */
+  font-weight: 500;
+}
+
+input {
+  width: 100px;
+  padding: 5px 10px;
+  font-size: 15px;
+  background-color: #11111111;
+  border-radius: 10px;
+  border: none;
+  outline: none;
+  
+}
+
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+button {
+  border: none;
+  outline: none;
+  background: none;
+  cursor: pointer;
+}
+
+ul {
+  width: 100%;
+  max-height: 80%;
+  margin-top: 1.5rem;
+  /* margin: 1.5rem; */
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  list-style: none;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+
+ul {
+  /* position: relative; */
+  /* margin-top: 0.5rem; */
+  /* margin-bottom: ; */
+  /* padding: 1rem; */
+  /* display: grid; */
+  /* height: calc(100% - 100px); */
+  /*  */
+  /* overflow-y: auto; */
+  /* justify-content: space-around; */
+  /* align-items: center; */
+
+}
+
+ul li {
+  display: flex;
+  justify-content: center;
+  padding-bottom: 5px;
+}
+
+.renderlist {
+  display: inline-grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 5px;
+} 
+
+.renderlist div {
+  display: flex;
+  align-items: center;
+}
+
+.edit,.del {
+  /* width: 30px; */
+  /* height: 30px; */
+
+  font-size: 1.3rem;
+  padding: 5px 10px;
+  background-color: #22222222;
+  border-radius: 50px;
+
+  display: grid;
+  place-content: center;
+}
+
+.edit {
+  color: #6EC207;
+}
+
+.del {
+  color: red;
+}
+
+
+/* === Scrollbar === */
+ul::-webkit-scrollbar {
+  width: 10px;
+  display: none;
+}
+
+ul::-webkit-scrollbar-track {
+  border-radius: 10px;
+  background-color: rgba(167, 167, 167, 0.504);
+}
+
+ul::-webkit-scrollbar-thumb {
+  background: #22211144;
+  border-radius: 10px;
+}
+
+
+.add {
+  width: 70px;
+  padding: 5px 10px;
+  font-size: 15px;
+  border-radius: 10px;
+  border: none;
+  outline: none;
+  font-weight: 900;
+  background-color: #6EC207;
+}
+
+ul > *:nth-child(3n+1),
+ul > *:nth-child(3n+2) {
+  border-right: 2px solid #333;
+
+}
+
+
+
+@media only screen and  (max-width: 1200px) {
+  ul {
+     grid-template-columns: repeat(2, auto);
+  }
+
+   ul > *:nth-child(3n+1),
+ul > *:nth-child(3n+2) {
+  border-right: 0px solid #333;
+
+}
+
+  ul > *:nth-child(2n+1)  {
+  border-right: 2px solid #333;
+}
+
+}
+
+@media only screen and  (max-width: 900px) {
+  ul {
+     grid-template-columns: repeat(1, auto);
+  }
+
+
+
+.input-group {
+  display: grid;
+  grid-template-columns: 1fr;
+  justify-content: space-around;
+  
+}
+
+.input-group  .add {
+justify-content: center;}
+.input-group > div {
+  display: flex;
+  justify-content: center;
+}
+
+.input-group {
+  /* display: flex; */
+  justify-content: center;
+  align-items: center;
+  /* flex-wrap: wrap; */
+}
+
+
+
+.add {
+  width: 150px;
+}
+
+ul {
+  width: 100%;
+  max-height: 65%;
+
+
+}
+
+ ul > *:nth-child(3n+1),
+ul > *:nth-child(3n+2) {
+  border-right: 0px solid #333;
+
+}
+
+  ul > *:nth-child(2n+1)  {
+  border-right: 0px solid #333;
+}
+
+}
+
+@media only screen and  (max-width: 600px) {
+.card {
+  position: relative;
+  width: 90%;
+}
+}
