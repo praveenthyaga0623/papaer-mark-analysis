@@ -69,7 +69,7 @@
       labels: {
          rotate: -90,
         show: true,
-        style: { colors: "rgba(0, 0, 0, 0.5)", fontFamily },
+        style: { colors: colorText, fontFamily },
       },
       axisTicks: { show: false },
       axisBorder: { show: false },
@@ -79,14 +79,14 @@
       max: 100,
       labels: {
         show: true,
-        style: { colors: "rgba(0, 0, 0, 0.5)", fontFamily },
+        style: { colors: colorText, fontFamily },
       },
       axisBorder: { show: false },
     },
     colors: [colorPrimary],
     grid: {
       show: true,
-      borderColor: "rgba(0, 0, 0, 0.2)",
+      borderColor: colorText,
     },
     tooltip: {
       enabled: false,
@@ -107,7 +107,27 @@
   const chart = new ApexCharts(document.querySelector(".area-chart"), chartOptions);
   chart.render();
 
+// ===================dark /light theme=================
 
+let darkmode = localStorage.getItem('darkmode')
+const themeSwitch = document.getElementById('theme-switch')
+
+const enableDarkmode = () => {
+  document.body.classList.add('darkmode')
+  localStorage.setItem('darkmode', 'active')
+}
+
+const disableDarkmode = () => {
+  document.body.classList.remove('darkmode')
+  localStorage.setItem('darkmode', null)
+}
+
+if(darkmode === "active") enableDarkmode()
+
+themeSwitch.addEventListener("click", () => {
+  darkmode = localStorage.getItem('darkmode')
+  darkmode !== "active" ? enableDarkmode() : disableDarkmode()
+})
 
 
   // ====== Chart Data Update ======
