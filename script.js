@@ -106,6 +106,8 @@
   // ====== Create and Render Chart ======
   const chart = new ApexCharts(document.querySelector(".area-chart"), chartOptions);
   chart.render();
+
+
 function updatePopupCountdown() {
       const examDate = new Date("2025-11-10T00:00:00");
       const now = new Date();
@@ -145,6 +147,7 @@ function updatePopupCountdown() {
         setInterval(updatePopupCountdown, 60000); // Every 1 min
       }
     });
+
 // ===================dark /light theme=================
 
 let darkmode = localStorage.getItem('darkmode')
