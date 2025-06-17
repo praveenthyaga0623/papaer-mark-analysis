@@ -310,3 +310,58 @@ ul > *:nth-child(3n+2) {
 .darkmode #theme-switch svg:last-child{
   display: block;
 }
+
+
+ #examPopup {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+
+    /* Popup Box */
+    .popup-content {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      position: relative;
+      max-width: 90%;
+      width: 400px;
+    }
+
+    .popup-content h2 {
+      margin-bottom: 10px;
+    }
+
+    .popup-days {
+      font-size: 40px;
+      color: #2e7d32;
+      font-weight: bold;
+    }
+
+    .popup-time {
+      font-size: 16px;
+      margin-top: 8px;
+      color: #555;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 12px;
+      right: 16px;
+      font-size: 24px;
+      cursor: pointer;
+      color: #aaa;
+    }
+
+    .close-btn:hover {
+      color: #000;
+    }
