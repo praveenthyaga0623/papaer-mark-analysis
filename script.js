@@ -106,7 +106,45 @@
   // ====== Create and Render Chart ======
   const chart = new ApexCharts(document.querySelector(".area-chart"), chartOptions);
   chart.render();
+function updatePopupCountdown() {
+      const examDate = new Date("2025-11-10T00:00:00");
+      const now = new Date();
 
+      const diffTime = examDate.getTime() - now.getTime();
+
+      const popupDaysEl = document.getElementById("popup-days");
+      const popupTimeEl = document.getElementById("popup-time");
+
+      if (!popupDaysEl || !popupTimeEl) return;
+
+      if (diffTime <= 0) {
+        popupDaysEl.textContent = "Exam is over.";
+        popupTimeEl.textContent = "";
+        return;
+      }
+
+      const totalMinutes = Math.floor(diffTime / (1000 * 60));
+      const days = Math.floor(totalMinutes / (60 * 24));
+      const hours = Math.floor((totalMinutes % (60 * 24)) / 60);
+      const minutes = totalMinutes % 60;
+
+      popupDaysEl.textContent = `${days} days left`;
+      popupTimeEl.textContent = `Around ${hours} hours and ${minutes} minutes remaining`;
+    }
+
+    function closePopup() {
+      document.getElementById("examPopup").style.display = "none";
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      if (!sessionStorage.getItem("popupShown")) {
+        document.getElementById("examPopup").style.display = "flex";
+        sessionStorage.setItem("popupShown", "true");
+
+        updatePopupCountdown(); // Initial call
+        setInterval(updatePopupCountdown, 60000); // Every 1 min
+      }
+    });
 // ===================dark /light theme=================
 
 let darkmode = localStorage.getItem('darkmode')
