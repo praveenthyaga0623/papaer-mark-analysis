@@ -1,73 +1,79 @@
- 
+// ====== Load Data ======
+let xData = JSON.parse(localStorage.getItem("xData")) || [];
+let yData = JSON.parse(localStorage.getItem("yData")) || [];
 
- // ====== Load Data ======
-  let xData = JSON.parse(localStorage.getItem("xData")) || [];
-  let yData = JSON.parse(localStorage.getItem("yData")) || [];
+// ====== Get CSS Variables ======
+const styles = getComputedStyle(document.documentElement);
+const colorPrimary = styles.getPropertyValue("--color-primary").trim();
+const colorLabel = styles.getPropertyValue("--color-label").trim();
+const colorText = styles.getPropertyValue("--color-text").trim();
+const fontFamily = styles.getPropertyValue("--font-family").trim();
 
-  // ====== Get CSS Variables ======
-  const styles = getComputedStyle(document.documentElement);
-  const colorPrimary = styles.getPropertyValue("--color-primary").trim();
-  const colorLabel = styles.getPropertyValue("--color-label").trim();
-  const colorText = styles.getPropertyValue("--color-text").trim();
-  const fontFamily = styles.getPropertyValue("--font-family").trim();
+const F_Pass = "#CC2B52";
+const S_Pass = "#074799";
+const C_Pass = "#7BD3EA";
+const B_Pass = "#FFE31A";
+const A_Pass = "#98CD00";
 
-// Rotate X-axis labels if screen width is less than 900px
+let currentChartType = localStorage.getItem("chartType") || "bar";
+const chartTypeSelect = document.getElementById("chartType");
+if (chartTypeSelect) chartTypeSelect.value = currentChartType;
 
+let chart;
 
- 
-  // ====== Chart Configuration ======
+function initializeChart() {
   const chartOptions = {
     chart: {
-      type: "bar",
+      type: currentChartType,
       toolbar: { show: false },
       height: 500,
-      background: "transparent",
     },
     plotOptions: {
       bar: {
         borderRadius: 5,
         columnWidth: "60%",
         borderRadiusApplication: "end",
-        
         colors: {
           ranges: [
-            { from: 75, to: 100, color: "#5CB338" },
-            { from: 65, to: 74.99, color: "#074799" },
-            { from: 55, to: 64.99, color: "#7BD3EA" },
-            { from: 35, to: 54.99, color: "#FFE31A" },
-            { from: 0, to: 34.99, color: "#CC2B52" },
+            { from: 75, to: 100, color: [A_Pass] },
+            { from: 65, to: 74.99, color: [B_Pass] },
+            { from: 55, to: 64.99, color: [C_Pass] },
+            { from: 35, to: 54.99, color: [S_Pass] },
+            { from: 0, to: 34.99, color: [F_Pass] },
           ],
         },
-        dataLabels: {
-      position: "top" ,
-      // <-- this is the key to push labels above the bars
-    },
-    
+        dataLabels: { position: "top" },
       },
     },
+    stroke: {
+      show: currentChartType === "line",
+      curve: "smooth",
+      width: 2,
+      colors: ["#007bff"],
+    },
+    markers: {
+      size: 0,
+      colors: ["#007bff"],
+      strokeColors: "#fff",
+      strokeWidth: 2,
+      hover: { size: 7 },
+    },
     dataLabels: {
-  enabled: true,
-  position: 'top',
-  offsetY: -20,
-  formatter: function (val) {
-    return val + ""; // Example: add a % symbol
-  },
-  formatter: function (val) {
-    return val === 0 ? "" : val;
-  },
-  style: {
-
-    fontSize: '10px',
-    fontFamily: fontFamily,
-    colors: [colorText]
-  }
-},
-
+      enabled: currentChartType === "bar",
+      position: "top",
+      offsetY: -20,
+      formatter: (val) => (val === 0 ? "AB" : val === 100 ? "" : val),
+      style: {
+        fontSize: "10px",
+        fontFamily,
+        colors: [colorText],
+      },
+    },
     series: [{ name: "", data: yData }],
     xaxis: {
       categories: xData,
       labels: {
-         rotate: -90,
+        rotate: -90,
         show: true,
         style: { colors: colorText, fontFamily },
       },
@@ -84,162 +90,166 @@
       axisBorder: { show: false },
     },
     colors: [colorPrimary],
-    grid: {
-      show: true,
-      borderColor: colorText,
-    },
+    grid: { show: true, borderColor: ["#22222211"] },
     tooltip: {
-      enabled: false,
+      enabled: true,
       followCursor: false,
-      custom: ({ series, seriesIndex, dataPointIndex }) => `
-        <div style="padding: 1px 5px; color: #333; background: #eee; border-radius: 4px;">
-          <strong>${series[seriesIndex][dataPointIndex]}%</strong>
-        </div>`,
+      custom: ({ series, seriesIndex, dataPointIndex }) => {
+        const paperNo = xData[dataPointIndex];
+        const marks = yData[dataPointIndex];
+        return `
+          <div style="padding: 5px 10px; background: #fff; color: #333;">
+            <b>Paper No. </b>${paperNo}<br>
+            <b>Marks </b>${marks}%
+          </div>`;
+      },
     },
   };
- if (window.innerWidth < 900) {
-  chartOptions.xaxis.labels.style.fontSize = "6px";
-  chartOptions.yaxis.labels.style.fontSize = "8px";
-  chartOptions.dataLabels.style.fontSize = "0px";
+
+  if (window.innerWidth < 900) {
+    chartOptions.xaxis.labels.style.fontSize = "6px";
+    chartOptions.yaxis.labels.style.fontSize = "8px";
+    chartOptions.dataLabels.enabled = false;
+  }
+
+  if (chart) chart.destroy();
+  chart = new ApexCharts(document.querySelector(".area-chart"), chartOptions);
+  chart.render();
 }
 
-  // ====== Create and Render Chart ======
-  const chart = new ApexCharts(document.querySelector(".area-chart"), chartOptions);
-  chart.render();
-
+document.addEventListener("DOMContentLoaded", initializeChart);
 
 function updatePopupCountdown() {
-      const examDate = new Date("2025-11-10T00:00:00");
-      const now = new Date();
+  const examDate = new Date("2025-11-10T00:00:00");
+  const now = new Date();
+  const diffTime = examDate.getTime() - now.getTime();
+  const popupDaysEl = document.getElementById("popup-days");
+  const popupTimeEl = document.getElementById("popup-time");
+  if (!popupDaysEl || !popupTimeEl) return;
 
-      const diffTime = examDate.getTime() - now.getTime();
+  if (diffTime <= 0) {
+    popupDaysEl.textContent = "Exam is over.";
+    popupTimeEl.textContent = "";
+    return;
+  }
 
-      const popupDaysEl = document.getElementById("popup-days");
-      const popupTimeEl = document.getElementById("popup-time");
+  const totalMinutes = Math.floor(diffTime / 60000);
+  const days = Math.floor(totalMinutes / (60 * 24));
+  const hours = Math.floor((totalMinutes % (60 * 24)) / 60);
+  const minutes = totalMinutes % 60;
 
-      if (!popupDaysEl || !popupTimeEl) return;
+  popupDaysEl.textContent = `${days} days left`;
+  popupTimeEl.textContent = `Around ${hours} hours and ${minutes} minutes remaining`;
+}
 
-      if (diffTime <= 0) {
-        popupDaysEl.textContent = "Exam is over.";
-        popupTimeEl.textContent = "";
-        return;
-      }
+function closePopup() {
+  document.getElementById("examPopup").style.display = "none";
+}
 
-      const totalMinutes = Math.floor(diffTime / (1000 * 60));
-      const days = Math.floor(totalMinutes / (60 * 24));
-      const hours = Math.floor((totalMinutes % (60 * 24)) / 60);
-      const minutes = totalMinutes % 60;
+window.addEventListener("DOMContentLoaded", () => {
+  if (!sessionStorage.getItem("popupShown")) {
+    document.getElementById("examPopup").style.display = "flex";
+    sessionStorage.setItem("popupShown", "true");
+    updatePopupCountdown();
+    setInterval(updatePopupCountdown, 60000);
+  }
+});
 
-      popupDaysEl.textContent = `${days} days left`;
-      popupTimeEl.textContent = `Around ${hours} hours and ${minutes} minutes remaining`;
-    }
-
-    function closePopup() {
-      document.getElementById("examPopup").style.display = "none";
-    }
-
-    window.addEventListener("DOMContentLoaded", () => {
-      if (!sessionStorage.getItem("popupShown")) {
-        document.getElementById("examPopup").style.display = "flex";
-        sessionStorage.setItem("popupShown", "true");
-
-        updatePopupCountdown(); // Initial call
-        setInterval(updatePopupCountdown, 60000); // Every 1 min
-      }
-    });
-
-// ===================dark /light theme=================
-
-let darkmode = localStorage.getItem('darkmode')
-const themeSwitch = document.getElementById('theme-switch')
+let darkmode = localStorage.getItem("darkmode");
+const themeSwitch = document.getElementById("theme-switch");
 
 const enableDarkmode = () => {
-  document.body.classList.add('darkmode')
-  localStorage.setItem('darkmode', 'active')
-}
+  document.body.classList.add("darkmode");
+  localStorage.setItem("darkmode", "active");
+};
 
 const disableDarkmode = () => {
-  document.body.classList.remove('darkmode')
-  localStorage.setItem('darkmode', null)
+  document.body.classList.remove("darkmode");
+  localStorage.setItem("darkmode", null);
+};
+
+if (darkmode === "active") enableDarkmode();
+
+if (themeSwitch) {
+  themeSwitch.addEventListener("click", () => {
+    darkmode = localStorage.getItem("darkmode");
+    darkmode !== "active" ? enableDarkmode() : disableDarkmode();
+  });
 }
 
-if(darkmode === "active") enableDarkmode()
-
-themeSwitch.addEventListener("click", () => {
-  darkmode = localStorage.getItem('darkmode')
-  darkmode !== "active" ? enableDarkmode() : disableDarkmode()
-})
-
-
-  // ====== Chart Data Update ======
-  function updateChart() {
-    chart.updateOptions({
-      series: [{ data: yData }],
-      xaxis: { categories: xData },
-    });
-    localStorage.setItem("xData", JSON.stringify(xData));
-    localStorage.setItem("yData", JSON.stringify(yData));
-    renderList();
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    document.getElementById("myButton")?.click();
   }
+});
 
-  // ====== Add New Data ======
-  function addData() {
-    const xInput = document.getElementById("xValue");
-    const yInput = document.getElementById("yValue");
+function updateChart() {
+  chart.updateOptions({
+    series: [{ data: yData }],
+    xaxis: { categories: xData },
+  });
+  localStorage.setItem("xData", JSON.stringify(xData));
+  localStorage.setItem("yData", JSON.stringify(yData));
+  renderList();
+}
 
-    const xVal = xInput.value.trim();
-    const yVal = parseFloat(yInput.value);
+function changeChartType() {
+  const selectedType = document.getElementById("chartType").value;
+  currentChartType = selectedType;
+  localStorage.setItem("chartType", selectedType);
+  initializeChart();
+}
 
-    if (xVal && !isNaN(yVal) && yVal >= 0 && yVal <= 100) {
-      xData.push(xVal);
-      yData.push(yVal);
-      updateChart();
-      xInput.value = "";
-      yInput.value = "";
-    } else {
-      alert("Please enter valid X and Y values (Y should be 0–100).");
-    }
+function addData() {
+  const xInput = document.getElementById("xValue");
+  const yInput = document.getElementById("yValue");
+
+  const xVal = xInput.value.trim();
+  const yVal = parseFloat(yInput.value);
+
+  if (xVal && !isNaN(yVal) && yVal >= 0 && yVal <= 100) {
+    xData.push(xVal);
+    yData.push(yVal);
+    updateChart();
+    xInput.value = "";
+    yInput.value = "";
+  } else {
+    alert("Please enter valid X and Y values (Y should be 0–100).");
   }
+}
 
-  // ====== Render Data List ======
-  function renderList() {
-    const list = document.getElementById("dataList");
-    list.innerHTML = "";
+function renderList() {
+  const list = document.getElementById("dataList");
+  list.innerHTML = "";
 
-    xData.forEach((x, i) => {
-      const li = document.createElement("li");
-      li.innerHTML = `
-        <div class="renderlist">
-          <div><b>P${x}</b></div>
-          <div>${yData[i]}</div>          
-          <div><button class="edit" onclick="editData(${i})"><i class='bx  bx-edit'  ></i> </button></div> 
-          <div><button class="del" onclick="deleteData(${i})"><i class='bx  bx-trash'  ></i> </button></div> 
-        </div>`;
-      list.appendChild(li);
-    });
-  }
+  xData.forEach((x, i) => {
+    const li = document.createElement("li");
+    li.innerHTML = `
+      <div class="renderlist">
+        <div><b>P${x}</b></div>
+        <div>${yData[i]}</div>
+        <div><button class="edit" onclick="editData(${i})"><i class='bx bx-edit'></i></button></div>
+        <div><button class="del" onclick="deleteData(${i})"><i class='bx bx-trash'></i></button></div>
+      </div>`;
+    list.appendChild(li);
+  });
+}
 
-  // ====== Edit Existing Data ======
-  function editData(index) {
-    const newX = prompt("Enter new X value:", xData[index]);
-    const newY = prompt("Enter new Y value:", yData[index]);
+function editData(index) {
+  const newX = prompt("Enter new X value:", xData[index]);
+  const newY = prompt("Enter new Y value:", yData[index]);
 
-    if (newX !== null && newY !== null && !isNaN(parseFloat(newY))) {
-      xData[index] = newX;
-      yData[index] = parseFloat(newY);
-      updateChart();
-    }
-  }
-
-  // ====== Delete Data Point ======
-  function deleteData(index) {
-    xData.splice(index, 1);
-    yData.splice(index, 1);
+  if (newX !== null && newY !== null && !isNaN(parseFloat(newY))) {
+    xData[index] = newX;
+    yData[index] = parseFloat(newY);
     updateChart();
   }
+}
 
-  
+function deleteData(index) {
+  xData.splice(index, 1);
+  yData.splice(index, 1);
+  updateChart();
+}
 
-  // ====== Initial Call ======
-  renderList();
-
+renderList();
