@@ -11,6 +11,7 @@ const colorText = styles.getPropertyValue("--color-text") ? styles.getPropertyVa
 const fontFamily = styles.getPropertyValue("--font-family") ? styles.getPropertyValue("--font-family").trim() : 'Poppins, sans-serif'; // Fallback
 
 
+
 const F_Pass = "#CC2B52";
 const S_Pass = "#074799";
 const C_Pass = "#7BD3EA";
@@ -130,6 +131,9 @@ function initializeChart() {
   chart = new ApexCharts(document.querySelector(".area-chart"), chartOptions);
   chart.render();
 }
+
+
+
 
 document.addEventListener("DOMContentLoaded", initializeChart);
 
@@ -306,6 +310,7 @@ function clearAllData() {
     alert("All data has been cleared!");
   }
 }
+
 
 // Function to import data
 function importData(event) {
