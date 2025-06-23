@@ -4,10 +4,12 @@ let yData = JSON.parse(localStorage.getItem("yData")) || [];
 
 // ====== Get CSS Variables ======
 const styles = getComputedStyle(document.documentElement);
-const colorPrimary = styles.getPropertyValue("--color-primary").trim();
-const colorLabel = styles.getPropertyValue("--color-label").trim();
-const colorText = styles.getPropertyValue("--color-text").trim();
-const fontFamily = styles.getPropertyValue("--font-family").trim();
+// Ensure these CSS variables are defined in style1.css or provide fallback
+const colorPrimary = styles.getPropertyValue("--color-primary") ? styles.getPropertyValue("--color-primary").trim() : '#007bff'; // Fallback
+const colorLabel = styles.getPropertyValue("--color-label") ? styles.getPropertyValue("--color-label").trim() : '#505050'; // Fallback
+const colorText = styles.getPropertyValue("--color-text") ? styles.getPropertyValue("--color-text").trim() : '#505050'; // Fallback
+const fontFamily = styles.getPropertyValue("--font-family") ? styles.getPropertyValue("--font-family").trim() : 'Poppins, sans-serif'; // Fallback
+
 
 const F_Pass = "#CC2B52";
 const S_Pass = "#074799";
@@ -25,7 +27,19 @@ function initializeChart() {
   const chartOptions = {
     chart: {
       type: currentChartType,
-      toolbar: { show: false },
+      toolbar: {
+      show: true,
+      tools: {
+        download: true,
+        selection: true,
+        zoom: false,
+        zoomin: true,
+        zoomout: true,
+        pan: false,
+        reset: false
+      },
+      autoSelected: 'zoom'
+    },
       height: 500,
     },
     plotOptions: {
@@ -148,10 +162,13 @@ function closePopup() {
 
 window.addEventListener("DOMContentLoaded", () => {
   if (!sessionStorage.getItem("popupShown")) {
-    document.getElementById("examPopup").style.display = "flex";
-    sessionStorage.setItem("popupShown", "true");
-    updatePopupCountdown();
-    setInterval(updatePopupCountdown, 60000);
+    const examPopup = document.getElementById("examPopup");
+    if (examPopup) { // Check if the element exists before trying to access its style
+      examPopup.style.display = "flex";
+      sessionStorage.setItem("popupShown", "true");
+      updatePopupCountdown();
+      setInterval(updatePopupCountdown, 60000);
+    }
   }
 });
 
@@ -161,11 +178,15 @@ const themeSwitch = document.getElementById("theme-switch");
 const enableDarkmode = () => {
   document.body.classList.add("darkmode");
   localStorage.setItem("darkmode", "active");
+  // Re-initialize chart to apply new theme colors
+  initializeChart();
 };
 
 const disableDarkmode = () => {
   document.body.classList.remove("darkmode");
   localStorage.setItem("darkmode", null);
+  // Re-initialize chart to apply new theme colors
+  initializeChart();
 };
 
 if (darkmode === "active") enableDarkmode();
@@ -214,7 +235,7 @@ function addData() {
     xInput.value = "";
     yInput.value = "";
   } else {
-    alert("Please enter valid X and Y values (Y should be 0–100).");
+    alert("Please enter valid Paper No. and Marks (Marks should be 0–100).");
   }
 }
 
@@ -236,20 +257,84 @@ function renderList() {
 }
 
 function editData(index) {
-  const newX = prompt("Enter new X value:", xData[index]);
-  const newY = prompt("Enter new Y value:", yData[index]);
+  const newX = prompt("Enter new Paper No.:", xData[index]);
+  const newY = prompt("Enter new Marks:", yData[index]);
 
-  if (newX !== null && newY !== null && !isNaN(parseFloat(newY))) {
-    xData[index] = newX;
-    yData[index] = parseFloat(newY);
-    updateChart();
+  if (newX !== null && newY !== null) {
+    const parsedY = parseFloat(newY);
+    if (!isNaN(parsedY) && parsedY >= 0 && parsedY <= 100) {
+      xData[index] = newX.trim();
+      yData[index] = parsedY;
+      updateChart();
+    } else {
+      alert("Invalid Marks. Marks should be between 0 and 100.");
+    }
   }
 }
 
 function deleteData(index) {
-  xData.splice(index, 1);
-  yData.splice(index, 1);
-  updateChart();
+  if (confirm("Are you sure you want to delete this data point?")) {
+    xData.splice(index, 1);
+    yData.splice(index, 1);
+    updateChart();
+  }
 }
+
+// Function to export data
+function exportData() {
+  const dataToExport = {
+    xData: xData,
+    yData: yData,
+  };
+  const dataStr = JSON.stringify(dataToExport, null, 2);
+  const blob = new Blob([dataStr], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "paper_marks_data.json";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function clearAllData() {
+  if (confirm("Are you sure you want to clear all data? This action cannot be undone.")) {
+    xData = [];
+    yData = [];
+    updateChart();
+    alert("All data has been cleared!");
+  }
+}
+
+// Function to import data
+function importData(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const importedData = JSON.parse(e.target.result);
+      if (importedData.xData && Array.isArray(importedData.xData) &&
+          importedData.yData && Array.isArray(importedData.yData) &&
+          importedData.xData.length === importedData.yData.length) {
+        xData = importedData.xData;
+        yData = importedData.yData;
+        updateChart();
+        alert("Data imported successfully!");
+      } else {
+        alert("Invalid data format in the imported file. Please ensure it contains 'xData' and 'yData' arrays of equal length.");
+      }
+    } catch (error) {
+      alert("Error parsing imported file. Please ensure it's a valid JSON file.");
+      console.error("Import error:", error);
+    }
+  };
+  reader.readAsText(file);
+  // Clear the input so the same file can be selected again
+  event.target.value = null;
+}
+
 
 renderList();

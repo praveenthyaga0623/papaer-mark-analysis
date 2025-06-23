@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="style1.css">
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link href='https://cdn.boxicons.com/fonts/basic/boxicons.min.css' rel='stylesheet'>
 </head>
 
 <body>
@@ -36,14 +37,28 @@
                 <label for="yValue">Marks : </label>
                 <input type="number" id="yValue" placeholder="Marks">
             </div>
-            <div>
+            <div class="tool-bar">
                 <button id="myButton" onclick="addData()" class="add">
                     <i class='bx bx-plus-circle'></i>
                 </button>
+                
+                <button onclick="exportData()" class="action-btn1 export-btn"><i class='bx  bx-arrow-up-stroke-circle'  ></i> </button>
+                <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importData(event)">
+                <button onclick="document.getElementById('importFile').click()" class="action-btn1 import-btn"><i class='bx  bx-arrow-down-circle'  ></i> </button>
+                 <button onclick="clearAllData()" class="action-btn1 clear-btn"><i class='bx  bx-trash'  ></i> </button>
+        
             </div>
         </div>
 
+        <div class="data-actions">
+            <button onclick="exportData()" class="action-btn2 export-btn">Export Data</button>
+            <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importData(event)">
+            <button onclick="document.getElementById('importFile').click()" class="action-btn2 import-btn">Import Data</button>
+        </div>
+
         <ul id="dataList"></ul>
+
+        
     </div>
 
     <script src="./script.js"></script>
